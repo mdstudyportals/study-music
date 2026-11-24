@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapid Depolarization</title>
+<style>
+/* Online music playlist for Study Portals — starter page.
+   1. Put your music files in this repository (for example in a folder named "music").
+   2. List them in TRACKS below: a title and the file's path. That's all you edit.
+   3. Upload this page too, then add its address (https://yourname.github.io/REPO/music/) as a link in Portal Builder.
+   The portal plays it inside, keeps it going in its mini-player, and its media buttons (headphones, keyboard) work.
+   The music stays here online, so the portal file doesn't grow. */
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1f2321;--muted:#6b706c;--line:#e4e1d9;--accent:#0f5c4d;--soft:#e4efe9}
+@media (prefers-color-scheme:dark){:root{--bg:#141716;--card:#1d2120;--ink:#ecefed;--muted:#9aa29e;--line:#2c3230;--accent:#62c2a8;--soft:#22302c}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 32px}
+h1{font-size:20px;margin:0 0 2px}.sub{color:var(--muted);margin:0 0 16px;font-size:13.5px}
+.head{display:flex;gap:14px;align-items:center;margin-bottom:4px}.head img{flex:none;width:84px;height:84px;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.player{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.now{font-weight:700;font-size:16px;min-height:1.4em}.now small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 0 6px;font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted)}
+.bar input{flex:1;accent-color:var(--accent)}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;cursor:pointer;min-width:42px}
+button.main{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;min-width:64px}
+button[aria-pressed=true]{background:var(--soft);border-color:var(--accent);color:var(--accent)}
+.vol{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:13px;color:var(--muted)}.vol input{width:110px;accent-color:var(--accent)}
+ol{list-style:none;margin:14px 0 0;padding:0;border-top:1px solid var(--line)}
+li button{display:flex;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 6px;background:none;gap:10px}
+li button span{color:var(--muted);min-width:1.6em;font-variant-numeric:tabular-nums}
+li button[aria-current=true]{color:var(--accent);font-weight:700}
+.note{color:var(--muted);font-size:12.5px;margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+  <div class="head"><img id="logo" alt="" hidden><div><h1 id="ttl">Study Music</h1>
+  <p class="sub" id="sub">Press play, then keep studying — it keeps playing in the portal's mini-player.</p></div></div>
+  <div class="player">
+    <div class="now" id="now">—</div>
+    <div class="bar"><span id="t0">0:00</span><input type="range" id="pos" min="0" max="1000" value="0" aria-label="Position"><span id="t1">0:00</span></div>
+    <div class="ctl">
+      <button id="prev" aria-label="Previous">⏮</button>
+      <button id="pp" class="main" aria-label="Play">▶</button>
+      <button id="next" aria-label="Next">⏭</button>
+      <button id="shuf" aria-pressed="false" title="Shuffle">🔀</button>
+      <button id="rep" aria-pressed="false" title="Repeat the playlist">🔁</button>
+      <label class="vol">Volume <input type="range" id="vol" min="0" max="100" value="80"></label>
+    </div>
+    <ol id="list"></ol>
+    <p class="note" id="note"></p>
+  </div>
+</main>
+<audio id="a" preload="metadata"></audio>
+<script>
+// ===== Edit only this part =====
+// Each song: a title and its file; artist and composer are optional, e.g.
+//   {title: "Clair de Lune", artist: "Lang Lang", composer: "Claude Debussy", file: "music/clair-de-lune.mp3"},
+// Study portals also read the title, artist and composer saved inside the song files themselves.
+var LOGO = "logo-17fabb46.png";   // optional: a square picture in this folder, e.g. "logo.png"
+var TITLE = "Rapid Depolarization";
+var TRACKS = [
+  {"title":"Age of Wonder","artist":"Scott Buckley","file":"../music/age-of-wonder.mp3"},
+  {"title":"Electronic Stylish Rock","artist":"Alex Grohl","file":"../music/alexgrohl-electronic-stylish-rock-15045.mp3"},
+  {"title":"Motivation Epic Rock","artist":"Alex Grohl","file":"../music/alexgrohl-motivation-epic-rock-111444.mp3"},
+  {"title":"Aphelion","artist":"Scott Buckley","file":"../music/aphelion.mp3"},
+  {"title":"Indie Rock","artist":"Atlas Audio","file":"../music/atlasaudio-indie-rock-606263.mp3"},
+  {"title":"Escape Velocity","artist":"Scott Buckley","file":"../music/escape-velocity.mp3"},
+  {"title":"Hyperion","artist":"Scott Buckley","file":"../music/hyperion.mp3"},
+  {"title":"Ignis","artist":"Scott Buckley","file":"../music/ignis.mp3"},
+  {"title":"Uplifting Action Sport Energetic Rock","artist":"Ikoliks","file":"../music/ikoliks-uplifting-action-sport-energetic.mp3"},
+  {"title":"Epic Motivation","artist":"Kulakovka","file":"../music/kulakovka-epic-motivation-618588.mp3"},
+  {"title":"Legacy","artist":"Scott Buckley","file":"../music/legacy.mp3"},
+  {"title":"Sports Rock Music","artist":"lnplusmusic","file":"../music/lnplusmusic-sport-sports-rock-music-5979.mp3"},
+  {"title":"Ride The Wind","artist":"Scott Buckley","file":"../music/ride-the-wind.mp3"},
+  {"title":"Rise Above","artist":"Scott Buckley","file":"../music/rise-above.mp3"},
+  {"title":"Rites of Passage","artist":"Scott Buckley","file":"../music/rites-of-passage.mp3"},
+  {"title":"Bring Me The Sky","artist":"Scott Buckley","file":"../music/bring-me-the-sky.mp3"},
+  {"title":"Into The Unknown","artist":"Scott Buckley","file":"../music/into-the-unknown.mp3"},
+  {"title":"Terminus","artist":"Scott Buckley","file":"../music/terminus.mp3"},
+  {"title":"The Climb","artist":"Scott Buckley","file":"../music/the-climb.mp3"},
+  {"title":"Sentinel","artist":"Scott Buckley","file":"../music/sentinel.mp3"}
+];
+// ===============================
+(function(){
+  var a = document.getElementById("a"), $ = function(id){ return document.getElementById(id); };
+  var K = "study-music:" + location.pathname, st = {i: 0, shuf: false, rep: true, vol: 0.8, t: 0};
+  try { Object.assign(st, JSON.parse(localStorage.getItem(K) || "{}")); } catch(e){}
+  if (!(st.i < TRACKS.length)) st.i = 0;
+  $("ttl").textContent = TITLE; document.title = TITLE;
+  if (LOGO){ $("logo").src = LOGO; $("logo").hidden = false; }
+  function save(){ try { localStorage.setItem(K, JSON.stringify({i: st.i, shuf: st.shuf, rep: st.rep, vol: st.vol, t: Math.round(a.currentTime || 0)})); } catch(e){} }
+  function clock(x){ x = Math.max(0, Math.floor(x || 0)); return Math.floor(x / 60) + ":" + ("0" + x % 60).slice(-2); }
+  function list(){
+    $("list").innerHTML = TRACKS.map(function(t, k){ return '<li><button data-k="' + k + '"' + (k === st.i ? ' aria-current="true"' : "") + '><span>' + (k + 1) + '</span>' + esc(t.title) + '</button></li>'; }).join("");
+  }
+  function esc(x){ return String(x).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function load(k, play, at){
+    st.i = (k + TRACKS.length) % TRACKS.length; var t = TRACKS[st.i];
+    a.src = t.file; a.volume = st.vol; var by = [t.artist || "", t.composer && t.composer !== t.artist ? "Composer: " + t.composer : ""].filter(Boolean).join(" · "); $("now").innerHTML = esc(t.title) + (by ? "<small>" + esc(by) + "</small>" : "");
+    if (at) a.addEventListener("loadedmetadata", function f(){ a.removeEventListener("loadedmetadata", f); try { a.currentTime = at; } catch(e){} });
+    list(); meta(); save(); tell(true);
+    if (play) a.play().catch(function(){});
+  }
+  function pick(dir){
+    if (st.shuf && TRACKS.length > 1){ var j; do { j = Math.floor(Math.random() * TRACKS.length); } while (j === st.i); return j; }
+    var j2 = st.i + dir; if (j2 >= TRACKS.length || j2 < 0){ if (!st.rep) return -1; j2 = (j2 + TRACKS.length) % TRACKS.length; } return j2;
+  }
+  function next(){ var j = pick(1); if (j >= 0) load(j, true); }
+  function prev(){ if (a.currentTime > 3){ a.currentTime = 0; return; } var j = pick(-1); if (j >= 0) load(j, true); }
+  function toggle(){ if (a.paused) a.play().catch(function(){}); else a.pause(); }
+  function paint(){
+    $("pp").textContent = a.paused ? "▶" : "⏸"; $("pp").setAttribute("aria-label", a.paused ? "Play" : "Pause");
+    $("shuf").setAttribute("aria-pressed", st.shuf); $("rep").setAttribute("aria-pressed", st.rep); $("vol").value = Math.round(st.vol * 100);
+  }
+  // ---- talks with the Study Portal (mini-player, media buttons); harmless when opened on its own ----
+  var sent = 0;
+  function tell(force){
+    if (window.parent === window) return; var now = Date.now(); if (!force && now - sent < 900) return; sent = now;
+    window.parent.postMessage({portalYT: 1, pl: 1, state: a.paused ? "paused" : "playing", t: a.currentTime || 0, d: isFinite(a.duration) ? a.duration : 0,
+      muted: a.muted || a.volume === 0, vol: Math.round(a.volume * 100), title: TRACKS[st.i] ? TRACKS[st.i].title : ""}, "*");
+  }
+  window.addEventListener("message", function(e){
+    if (e.source !== window.parent || !e.data || !e.data.portalYT) return;
+    var c = e.data.cmd, v = e.data.v;
+    if (c === "play") a.play().catch(function(){}); else if (c === "pause") a.pause();
+    else if (c === "next") next(); else if (c === "prev") prev();
+    else if (c === "seek" && typeof v === "number") a.currentTime = v;
+    else if (c === "vol" && typeof v === "number"){ st.vol = Math.max(0, Math.min(1, v / 100)); a.volume = st.vol; a.muted = false; }
+    else if (c === "mute") a.muted = true; else if (c === "unmute") a.muted = false;
+    tell(true); paint();
+  });
+  function meta(){
+    if (!("mediaSession" in navigator) || !TRACKS[st.i]) return;
+    try { navigator.mediaSession.metadata = new MediaMetadata({title: TRACKS[st.i].title, artist: [TRACKS[st.i].artist, TRACKS[st.i].composer].filter(Boolean).join(" · "), album: TITLE, artwork: LOGO ? [{src: new URL(LOGO, location.href).href, sizes: "512x512"}] : []}); } catch(e){}
+  }
+  if ("mediaSession" in navigator){
+    [["play", function(){ a.play(); }], ["pause", function(){ a.pause(); }], ["nexttrack", next], ["previoustrack", prev],
+     ["seekforward", function(d){ a.currentTime = Math.min(a.duration || 0, a.currentTime + (d && d.seekOffset || 10)); }],
+     ["seekbackward", function(d){ a.currentTime = Math.max(0, a.currentTime - (d && d.seekOffset || 10)); }],
+     ["seekto", function(d){ if (d && typeof d.seekTime === "number") a.currentTime = d.seekTime; }]].forEach(function(x){ try { navigator.mediaSession.setActionHandler(x[0], x[1]); } catch(e){} });
+  }
+  // ---- buttons ----
+  $("pp").onclick = toggle; $("next").onclick = next; $("prev").onclick = prev;
+  $("shuf").onclick = function(){ st.shuf = !st.shuf; paint(); save(); };
+  $("rep").onclick = function(){ st.rep = !st.rep; paint(); save(); };
+  $("vol").oninput = function(){ st.vol = this.value / 100; a.volume = st.vol; a.muted = false; save(); tell(true); };
+  $("list").onclick = function(e){ var b = e.target.closest("button[data-k]"); if (b) load(+b.dataset.k, true); };
+  $("pos").oninput = function(){ if (isFinite(a.duration)) a.currentTime = this.value / 1000 * a.duration; };
+  a.addEventListener("timeupdate", function(){ if (isFinite(a.duration)){ $("pos").value = Math.round(a.currentTime / a.duration * 1000); $("t1").textContent = clock(a.duration); } $("t0").textContent = clock(a.currentTime); tell(false); if (Math.round(a.currentTime) % 5 === 0) save(); });
+  ["play", "pause", "volumechange", "loadedmetadata"].forEach(function(ev){ a.addEventListener(ev, function(){ paint(); tell(true); if ("mediaSession" in navigator) try { navigator.mediaSession.playbackState = a.paused ? "paused" : "playing"; } catch(e){} }); });
+  a.addEventListener("ended", function(){ var j = pick(1); if (j >= 0) load(j, true); else tell(true); });
+  a.addEventListener("error", function(){ $("note").textContent = "Couldn't play “" + (TRACKS[st.i] || {}).title + "”. Check that its file is in the repository at " + (TRACKS[st.i] || {}).file + "."; });
+  if (!TRACKS.length){ $("now").textContent = "No tracks yet — add them to TRACKS in this page."; return; }
+  load(st.i, false, st.t > 5 ? st.t : 0); paint();
+})();
+</script>
+</body>
+</html>
