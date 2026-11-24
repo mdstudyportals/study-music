@@ -1,6 +1,7 @@
 {
  "title": "Refractory Period",
  "logo": "logo-f6cd067e.png",
+ "logoAnim": "logo-906bbc0b.svg",
  "tracks": [
   {
    "title": "Acoustic Guitar Sunrise Travel",
@@ -82,26 +83,6 @@
    "title": "Moonlight",
    "artist": "Scott Buckley",
    "file": "../music/moonlight.mp3"
-  },
-  {
-   "title": "Adrift Among Infinite Stars",
-   "artist": "Scott Buckley",
-   "file": "../music/adrift-among-infinite-stars.mp3"
-  },
-  {
-   "title": "Castles in the Sky",
-   "artist": "Scott Buckley",
-   "file": "../music/castles-in-the-sky.mp3"
-  },
-  {
-   "title": "Childhood",
-   "artist": "Scott Buckley",
-   "file": "../music/childhood.mp3"
-  },
-  {
-   "title": "Growing Up",
-   "artist": "Scott Buckley",
-   "file": "../music/growing-up.mp3"
   },
   {
    "title": "Midvinter",

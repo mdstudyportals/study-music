@@ -59,6 +59,7 @@ li button[aria-current=true]{color:var(--accent);font-weight:700}
 //   {title: "Clair de Lune", artist: "Lang Lang", composer: "Claude Debussy", file: "music/clair-de-lune.mp3"},
 // Study portals also read the title, artist and composer saved inside the song files themselves.
 var LOGO = "logo-f6cd067e.png";   // optional: a square picture in this folder, e.g. "logo.png"
+var LOGOA = "logo-906bbc0b.svg";  // optional: an animated version (SVG), shown while a song plays
 var TITLE = "Refractory Period";
 var TRACKS = [
   {"title":"Acoustic Guitar Sunrise Travel","artist":"Alex Morgan","file":"../music/alex-morgan-acoustic-guitar-sunrise-trav.mp3"},
@@ -77,10 +78,6 @@ var TRACKS = [
   {"title":"Relaxing Piano","artist":"Marlowe Music","file":"../music/marlowemusic-relaxing-piano-583402.mp3"},
   {"title":"Memories of Stone","artist":"Scott Buckley","file":"../music/memories-of-stone.mp3"},
   {"title":"Moonlight","artist":"Scott Buckley","file":"../music/moonlight.mp3"},
-  {"title":"Adrift Among Infinite Stars","artist":"Scott Buckley","file":"../music/adrift-among-infinite-stars.mp3"},
-  {"title":"Castles in the Sky","artist":"Scott Buckley","file":"../music/castles-in-the-sky.mp3"},
-  {"title":"Childhood","artist":"Scott Buckley","file":"../music/childhood.mp3"},
-  {"title":"Growing Up","artist":"Scott Buckley","file":"../music/growing-up.mp3"},
   {"title":"Midvinter","artist":"Scott Buckley","file":"../music/midvinter.mp3"},
   {"title":"Reverie","artist":"Scott Buckley","file":"../music/reverie.mp3"},
   {"title":"Snowfall","artist":"Scott Buckley","file":"../music/snowfall.mp3"},
@@ -121,6 +118,7 @@ var TRACKS = [
   function prev(){ if (a.currentTime > 3){ a.currentTime = 0; return; } var j = pick(-1); if (j >= 0) load(j, true); }
   function toggle(){ if (a.paused) a.play().catch(function(){}); else a.pause(); }
   function paint(){
+    if (LOGOA && LOGO){ var lw = a.paused ? LOGO : LOGOA; if ($("logo").getAttribute("src") !== lw) $("logo").src = lw; }   // moves while playing
     $("pp").textContent = a.paused ? "▶" : "⏸"; $("pp").setAttribute("aria-label", a.paused ? "Play" : "Pause");
     $("shuf").setAttribute("aria-pressed", st.shuf); $("rep").setAttribute("aria-pressed", st.rep); $("vol").value = Math.round(st.vol * 100);
   }

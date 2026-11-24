@@ -59,6 +59,7 @@ li button[aria-current=true]{color:var(--accent);font-weight:700}
 //   {title: "Clair de Lune", artist: "Lang Lang", composer: "Claude Debussy", file: "music/clair-de-lune.mp3"},
 // Study portals also read the title, artist and composer saved inside the song files themselves.
 var LOGO = "logo-6712ebeb.png";   // optional: a square picture in this folder, e.g. "logo.png"
+var LOGOA = "logo-a11023b4.svg";  // optional: an animated version (SVG), shown while a song plays
 var TITLE = "Plateau";
 var TRACKS = [
   {"title":"Brown Noise","artist":"George Dyer","file":"../music/brown-noise-1-wnoise-org.mp3"},
@@ -104,6 +105,7 @@ var TRACKS = [
   function prev(){ if (a.currentTime > 3){ a.currentTime = 0; return; } var j = pick(-1); if (j >= 0) load(j, true); }
   function toggle(){ if (a.paused) a.play().catch(function(){}); else a.pause(); }
   function paint(){
+    if (LOGOA && LOGO){ var lw = a.paused ? LOGO : LOGOA; if ($("logo").getAttribute("src") !== lw) $("logo").src = lw; }   // moves while playing
     $("pp").textContent = a.paused ? "▶" : "⏸"; $("pp").setAttribute("aria-label", a.paused ? "Play" : "Pause");
     $("shuf").setAttribute("aria-pressed", st.shuf); $("rep").setAttribute("aria-pressed", st.rep); $("vol").value = Math.round(st.vol * 100);
   }
