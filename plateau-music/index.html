@@ -54,17 +54,20 @@ li button[aria-current=true]{color:var(--accent);font-weight:700}
 <audio id="a" preload="metadata"></audio>
 <script>
 // ===== Edit only this part =====
+// Each song: a title and its file; artist and composer are optional, e.g.
+//   {title: "Clair de Lune", artist: "Lang Lang", composer: "Claude Debussy", file: "music/clair-de-lune.mp3"},
+// Study portals also read the title, artist and composer saved inside the song files themselves.
 var TITLE = "Plateau";
 var TRACKS = [
-  {"title":"Brown Noise 1 - wNoise.org","artist":"George Dyer","file":"../music/brown-noise-1-wnoise-org.mp3"},
-  {"title":"Pink Noise 1 - wNoise.org","file":"../music/pink-noise-1-wnoise-org.mp3"},
-  {"title":"White Noise 1 - wNoise.org","file":"../music/white-noise-1-wnoise-org.mp3"},
-  {"title":"River 1 - wNoise.org","file":"../music/river-1-wnoise-org.mp3"},
-  {"title":"Waves - wNoise.org","file":"../music/waves-wnoise-org.mp3"},
-  {"title":"Wind - wNoise.org","file":"../music/wind-wnoise-org.mp3"},
-  {"title":"Rain - wNoise.org","file":"../music/rain-wnoise-org.mp3"},
-  {"title":"AMBForst Forest (ID 0100) BigSoundBank.com","file":"../music/ambforst-forest-id-0100-bigsoundbank-com.wav"},
-  {"title":"AMBForst Forest at night after rain (ID 0555) BigSoundBank.com","file":"../music/ambforst-forest-at-night-after-rain-id-0.wav"},
+  {"title":"Brown Noise","artist":"George Dyer","file":"../music/brown-noise-1-wnoise-org.mp3"},
+  {"title":"Pink Noise","file":"../music/pink-noise-1-wnoise-org.mp3"},
+  {"title":"White Noise","file":"../music/white-noise-1-wnoise-org.mp3"},
+  {"title":"River","file":"../music/river-1-wnoise-org.mp3"},
+  {"title":"Waves","file":"../music/waves-wnoise-org.mp3"},
+  {"title":"Wind","file":"../music/wind-wnoise-org.mp3"},
+  {"title":"Rain","file":"../music/rain-wnoise-org.mp3"},
+  {"title":"Forest","file":"../music/ambforst-forest-id-0100-bigsoundbank-com.wav"},
+  {"title":"Forest At Night After Rain","file":"../music/ambforst-forest-at-night-after-rain-id-0.wav"},
   {"title":"Hemlock stream","file":"../music/hemlock-stream.ogg"},
   {"title":"Rain and thunder","file":"../music/rain-and-thunder.ogg"},
   {"title":"Walk in the rainforest","file":"../music/walk-in-the-rainforest.ogg"}
@@ -84,7 +87,7 @@ var TRACKS = [
   function esc(x){ return String(x).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
   function load(k, play, at){
     st.i = (k + TRACKS.length) % TRACKS.length; var t = TRACKS[st.i];
-    a.src = t.file; a.volume = st.vol; $("now").innerHTML = esc(t.title) + (t.artist ? "<small>" + esc(t.artist) + "</small>" : "");
+    a.src = t.file; a.volume = st.vol; var by = [t.artist || "", t.composer && t.composer !== t.artist ? "Composer: " + t.composer : ""].filter(Boolean).join(" · "); $("now").innerHTML = esc(t.title) + (by ? "<small>" + esc(by) + "</small>" : "");
     if (at) a.addEventListener("loadedmetadata", function f(){ a.removeEventListener("loadedmetadata", f); try { a.currentTime = at; } catch(e){} });
     list(); meta(); save(); tell(true);
     if (play) a.play().catch(function(){});
@@ -119,7 +122,7 @@ var TRACKS = [
   });
   function meta(){
     if (!("mediaSession" in navigator) || !TRACKS[st.i]) return;
-    try { navigator.mediaSession.metadata = new MediaMetadata({title: TRACKS[st.i].title, artist: TRACKS[st.i].artist || "", album: TITLE}); } catch(e){}
+    try { navigator.mediaSession.metadata = new MediaMetadata({title: TRACKS[st.i].title, artist: [TRACKS[st.i].artist, TRACKS[st.i].composer].filter(Boolean).join(" · "), album: TITLE}); } catch(e){}
   }
   if ("mediaSession" in navigator){
     [["play", function(){ a.play(); }], ["pause", function(){ a.pause(); }], ["nexttrack", next], ["previoustrack", prev],
